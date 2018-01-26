@@ -11,7 +11,7 @@ __all__ = [
 
 
 class LSTMPacker(Transformer):
-    """Pack rows in order to be used as input for LSTM models.
+    """Pack rows in order to be used as input for LSTM networks.
 
     Args:
         :param sequence_len: the size of the sequences to be created (default: `2`)

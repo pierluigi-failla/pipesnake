@@ -80,7 +80,7 @@ pipe = SeriesPipe(transformers=[
 ])
 ```
 
-More info in the [documentation](docs/source/index.rst) and in the [examples](examples/README.md).
+More info in the [documentation]() and in the [examples](examples/README.md).
 
 # Batteries included
 
@@ -91,6 +91,7 @@ Module | Name | Short Description
 `pipenskae.transformers.combiner` | `Combiner` | Apply user function to a column or a set of columns
 `pipenskae.transformers.combiner` | `Roller` | Apply the provided function rolling within a given window
 `pipenskae.transformers.converter` | `Category2Number` | Convert categorical to number
+`pipenskae.transformers.deeplearning` | `LSTMPacker` | Pack rows in order to be used as input for LSTM networks
 `pipenskae.transformers.dropper` | `DropDuplicates` | Drop duplicated rows and/or cols
 `pipenskae.transformers.dropper` | `DropNanCols` | Drop cols with nans
 `pipenskae.transformers.dropper` | `DropNanRows` | Drop rows with nans

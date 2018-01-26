@@ -1,4 +1,4 @@
-# To Generate Sphinx Docs
+# To Generate Sphinx Docs for `pipesnake`
 
 Run `sphinx-apidoc -o source ../pipesnake`.
 

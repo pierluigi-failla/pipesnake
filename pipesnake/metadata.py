@@ -5,7 +5,7 @@
 package = 'pipesnake'
 project = 'Pipesnake'
 project_no_spaces = project.replace(' ', '')
-version = '0.1'
+version = '0.1.dev'
 description = 'Feature extractor and data processing pipelines for Pandas inspired by Scikit-Learn.'
 authors = ['Pierluigi Failla']
 authors_string = ', '.join(authors)

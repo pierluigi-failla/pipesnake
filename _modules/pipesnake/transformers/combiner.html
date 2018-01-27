@@ -1,0 +1,346 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.transformers.combiner &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pipesnake.transformers.combiner</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="kn">from</span> <span class="nn">pipesnake.base</span> <span class="k">import</span> <span class="n">Transformer</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_check_cols</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Combiner&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Roller&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="Combiner"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner">[docs]</a><span class="k">class</span> <span class="nc">Combiner</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply user function to a column or a set of columns</span>
+
+<span class="sd">    This :class:`Transformer` applies `func` to the provided list of columns or list of lists of columns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices (or list of lists for multi-parameter func)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices (or list of lists for multi-parameter func)</span>
+<span class="sd">        :param func: the functor for the function to be applied</span>
+<span class="sd">        :param inv_func: the functor for the inverse function to be applied</span>
+<span class="sd">        :param as_dataframe: boolean if true the subset dataframe is passed to func (default: `False`) and the function</span>
+<span class="sd">                             is expected to return a DataFrame</span>
+<span class="sd">        :param reset_index: if true when the results of transformers get concatenated</span>
+<span class="sd">                            the index are reset otherwise the original index is kept (default: `True`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; def mult(x, y):</span>
+<span class="sd">    &gt;&gt;&gt;     return x * y</span>
+<span class="sd">    &gt;&gt;&gt; combiner = Combiner(x_cols=[[2, 3], [5, 7]], func=mult)</span>
+<span class="sd">    &gt;&gt;&gt; # This will return 2 columns where each item is the combination (multiplication) of</span>
+<span class="sd">    &gt;&gt;&gt; # items taken from the provided columns</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = combiner.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inv_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inv_func</span> <span class="o">=</span> <span class="n">inv_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span> <span class="o">=</span> <span class="n">as_dataframe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span> <span class="o">=</span> <span class="n">reset_index</span>
+
+        <span class="c1"># this is need to inverse mapping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+    <span class="k">def</span> <span class="nf">_check_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+        <span class="c1"># check if func signature match the number of inputs</span>
+        <span class="n">func_signature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">func_signature</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dim</span><span class="p">,</span> <span class="s1">&#39;mismatch number function params </span><span class="si">{}</span><span class="s1"> and number of inputs </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">func_signature</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Combiner.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span>
+        <span class="n">existing_columns</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cols</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">existing_columns</span><span class="p">,</span> <span class="s1">&#39;column: </span><span class="si">{}</span><span class="s1"> not in x columns </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">existing_columns</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">cols</span> <span class="ow">in</span> <span class="n">existing_columns</span><span class="p">,</span> <span class="s1">&#39;column: </span><span class="si">{}</span><span class="s1"> not in x columns </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">existing_columns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Combiner.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span>
+        <span class="n">existing_columns</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cols</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">existing_columns</span><span class="p">,</span> <span class="s1">&#39;column: </span><span class="si">{}</span><span class="s1"> not in y columns&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">cols</span> <span class="ow">in</span> <span class="n">existing_columns</span><span class="p">,</span> <span class="s1">&#39;column: </span><span class="si">{}</span><span class="s1"> not in y columns&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">proc_x</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The actual implementation transformer</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param data: a pandas dataframe to be processed</span>
+<span class="sd">            :param cols: the list of columns to be processed</span>
+<span class="sd">            :param proc_x: if true transform `x` otherwise transform `y`</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return data_new: the transformed data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># nothing to do</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="n">data_new</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;applying </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1"> columns&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">_x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">_x</span><span class="p">)</span> <span class="o">==</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+                <span class="n">_x</span> <span class="o">=</span> <span class="n">_x</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">:</span>
+                <span class="n">data_curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">_x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_x</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="p">))</span>
+                <span class="n">data_curr</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+            <span class="n">curr_column_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
+            <span class="n">data_curr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">curr_column_name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">proc_x</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">curr_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">][</span><span class="n">curr_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+            <span class="c1"># concatenate columns</span>
+            <span class="n">join</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">data_new</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">data_new</span> <span class="o">=</span> <span class="n">data_curr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">:</span>
+                    <span class="n">data_new</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">data_new</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">join</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">join</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">:</span>
+                    <span class="n">data_curr</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">data_curr</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">data_new</span> <span class="o">=</span> <span class="n">data_new</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_curr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_new</span>
+
+<div class="viewcode-block" id="Combiner.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Combiner.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="n">proc_x</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">proc_x</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The actual implementation of inverse transform</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param data:</span>
+<span class="sd">            :param proc_x:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># nothing to do</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="n">proc_x</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">proc_x</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="n">proc_x</span><span class="p">:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map_column_names</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+
+        <span class="n">data_org</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">org_cols</span> <span class="ow">in</span> <span class="n">cols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;inverting from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1"> columns using </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">org_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                         <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">_t</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">_t</span><span class="p">)</span> <span class="o">==</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+                <span class="n">_t</span> <span class="o">=</span> <span class="n">_t</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">:</span>
+                <span class="n">data_curr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_func</span><span class="p">(</span><span class="n">_t</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_t</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inv_func</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="p">))</span>
+                <span class="n">data_curr</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">org_cols</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">org_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">org_cols</span><span class="p">]</span>
+            <span class="n">data_curr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">org_cols</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;expected cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">org_cols</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_curr</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">org_cols</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">data_curr</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()),</span> <span class="s1">&#39;mismatch number of cols </span><span class="si">{}</span><span class="s1"> expected </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">org_cols</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_curr</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+
+            <span class="c1"># concatenate columns</span>
+            <span class="n">join</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">data_org</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">data_org</span> <span class="o">=</span> <span class="n">data_curr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">:</span>
+                    <span class="n">data_org</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">data_org</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">join</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">join</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_index</span><span class="p">:</span>
+                    <span class="n">data_curr</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">data_curr</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">data_org</span> <span class="o">=</span> <span class="n">data_org</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_curr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_org</span>
+
+<div class="viewcode-block" id="Combiner.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Combiner.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Combiner.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">proc_x</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Roller"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Roller">[docs]</a><span class="k">class</span> <span class="nc">Roller</span><span class="p">(</span><span class="n">Combiner</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply the provided function rolling within a given window</span>
+
+<span class="sd">    Note: resulting columns may contain nan (typically a total of `window-1` at the beginning)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices (or list of lists for multi-parameter func)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices (or list of lists for multi-parameter func)</span>
+<span class="sd">        :param func: the functor for the function to be applied (default: `None`)</span>
+<span class="sd">        :param inv_func: the functor for the inverse function to be applied (default: `None`)</span>
+<span class="sd">        :param window: an integer indicating the window size (default: `3`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; roller = Roller(x_cols=[0], roll_func=lambda x: x[0] + x[1], window=2)</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = roller.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">roll_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inv_roll_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Combiner</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="n">x_cols</span><span class="p">,</span> <span class="n">y_cols</span><span class="o">=</span><span class="n">y_cols</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">roller_func</span><span class="p">,</span> <span class="n">inv_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">roller_inv_func</span><span class="p">,</span>
+                          <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roll_func</span> <span class="o">=</span> <span class="n">roll_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inv_roll_func</span> <span class="o">=</span> <span class="n">inv_roll_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">window</span>
+
+<div class="viewcode-block" id="Roller.roller_func"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Roller.roller_func">[docs]</a>    <span class="k">def</span> <span class="nf">roller_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roll_func</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Roller.roller_inv_func"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Roller.roller_inv_func">[docs]</a>    <span class="k">def</span> <span class="nf">roller_inv_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inv_roll_func</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Roller.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Roller.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">Combiner</span><span class="o">.</span><span class="n">_check_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Roller.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.combiner.Roller.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">Combiner</span><span class="o">.</span><span class="n">_check_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

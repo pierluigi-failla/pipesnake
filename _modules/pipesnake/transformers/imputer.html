@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.transformers.imputer &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pipesnake.transformers.imputer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">KNeighborsRegressor</span>
+
+<span class="kn">from</span> <span class="nn">pipesnake.base</span> <span class="k">import</span> <span class="n">Transformer</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_check_cols</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_is_categorical_cols</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_shape</span>
+<span class="kn">from</span> <span class="nn">pipesnake.transformers.converter</span> <span class="k">import</span> <span class="n">Category2Number</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;ReplaceImputer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;KnnImputer&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="ReplaceImputer"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer">[docs]</a><span class="k">class</span> <span class="nc">ReplaceImputer</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Impute NaNs replacing them.</span>
+
+<span class="sd">    Replace NaNs using different strategies. Note that categorical columns will not be imputed see :class:`Category2Number`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param value: the value to be used in the imputation, it can be a number or `&#39;mean&#39;` or `&#39;median&#39;`, in the last</span>
+<span class="sd">                      two cases the value is the mean or the median of the given column</span>
+<span class="sd">        :param method:  {`backfill`, `bfill`, `pad`, `ffill`, `None`}, (default: `None`). Method to use for filling holes</span>
+<span class="sd">                         in reindexed Series pad / ffill: propagate last valid observation forward to next valid</span>
+<span class="sd">                         backfill / bfill: use NEXT valid observation to fill gap. More details: https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.fillna.html</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; imputer = ReplaceImputer()</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = imputer.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+
+<div class="viewcode-block" id="ReplaceImputer.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ReplaceImputer.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;median&#39;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">_data</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_data</span>
+
+<div class="viewcode-block" id="ReplaceImputer.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplaceImputer.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplaceImputer.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;removing nan values in x is not invertible as transformation&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="ReplaceImputer.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.ReplaceImputer.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;removing nan values in y is not invertible as transformation&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span></div></div>
+
+
+<div class="viewcode-block" id="KnnImputer"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer">[docs]</a><span class="k">class</span> <span class="nc">KnnImputer</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Impute NaNs using K-nearest neighbors.</span>
+
+<span class="sd">    Replace NaNs using different Knn approach</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param k: k value for Knn algorithm</span>
+<span class="sd">        :param x_is_categorical: a list of boolean indicating categorical columns, if `None` categorical will be autodetect</span>
+<span class="sd">                                 using the type of the column, all non numerical columns will be treated as categorical (default: `None`)</span>
+<span class="sd">        :param y_is_categorical: a list of boolean indicating categorical columns, if `None` categorical will be autodetect</span>
+<span class="sd">                                 using the type of the column, all non numerical columns will be treated as categorical (default: `None`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; imputer = KnnImputer()</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = imputer.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">x_is_categorical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_is_categorical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_is_categorical</span> <span class="o">=</span> <span class="n">x_is_categorical</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_is_categorical</span> <span class="o">=</span> <span class="n">y_is_categorical</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>  <span class="c1"># this is needed to deal with potential categorical columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_knn_models</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">is_categorical</span><span class="p">,</span> <span class="n">cat2num</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">assert</span> <span class="n">_shape</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;at least 2 columns are needed&#39;</span>
+        <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">nan_ids</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">nan_ids</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;current shape: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_shape</span><span class="p">(</span><span class="n">_data</span><span class="p">)))</span>
+        <span class="k">assert</span> <span class="n">_shape</span><span class="p">(</span><span class="n">_data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;not enough rows: </span><span class="si">{}</span><span class="s1"> removed </span><span class="si">{}</span><span class="s1"> rows&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_shape</span><span class="p">(</span><span class="n">_data</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">nan_ids</span><span class="p">))</span>
+
+        <span class="n">_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cat2num</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">is_categorical</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">cat</span><span class="p">:</span>
+                <span class="n">models</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">models</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">KNeighborsRegressor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">x_train</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="n">col</span><span class="p">]))]</span>
+            <span class="n">y_train</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span>
+                <span class="s1">&#39;fitting imputing_model for column: </span><span class="si">{}</span><span class="s1"> x_train.shape=</span><span class="si">{}</span><span class="s1"> y_train.shape=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">_shape</span><span class="p">(</span><span class="n">x_train</span><span class="p">),</span>
+                                                                                                 <span class="n">_shape</span><span class="p">(</span><span class="n">y_train</span><span class="p">)),</span>
+                                                                                                 <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">models</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">models</span>
+
+<div class="viewcode-block" id="KnnImputer.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_is_categorical</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_is_categorical</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_is_categorical</span> <span class="o">=</span> <span class="n">_is_categorical_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span>
+        <span class="n">categorical_cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_is_categorical</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Category2Number</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="n">categorical_cols</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_knn_models</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_is_categorical</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="KnnImputer.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_is_categorical</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_is_categorical</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_is_categorical</span> <span class="o">=</span> <span class="n">_is_categorical_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span>
+        <span class="n">categorical_cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_is_categorical</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Category2Number</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="n">categorical_cols</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># yes, it is x_col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_knn_models</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_is_categorical</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">cat2num</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cat2num</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># compute imputation values</span>
+        <span class="n">impute_values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+            <span class="n">impute_values</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="n">nan_ids</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">_data</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nan_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">x_pred</span> <span class="o">=</span> <span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nan_ids</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">x_pred</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">col</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">x_pred</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">impute_values</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># temporary imputation for other missing values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;predicting model for column: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nan_ids</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_pred</span><span class="p">)</span>
+
+        <span class="n">_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cat2num</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_data</span>
+
+<div class="viewcode-block" id="KnnImputer.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knn_models</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="KnnImputer.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cat2num</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knn_models</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="KnnImputer.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;removing nan cols in x is not invertible as transformation&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="KnnImputer.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.imputer.KnnImputer.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;removing nan cols y is not invertible as transformation&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

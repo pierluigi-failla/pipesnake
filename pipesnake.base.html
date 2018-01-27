@@ -1,0 +1,575 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.base package &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pipesnake.pipe package" href="pipesnake.pipe.html" />
+    <link rel="prev" title="pipesnake package" href="pipesnake.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.pipe.html" title="pipesnake.pipe package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.html" title="pipesnake package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" accesskey="U">pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pipesnake-base-package">
+<h1>pipesnake.base package<a class="headerlink" href="#pipesnake-base-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pipesnake.base.abstract">
+<span id="pipesnake-base-abstract-module"></span><h2>pipesnake.base.abstract module<a class="headerlink" href="#module-pipesnake.base.abstract" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.base.abstract.Transformer">
+<em class="property">class </em><code class="descclassname">pipesnake.base.abstract.</code><code class="descname">Transformer</code><span class="sig-paren">(</span><em>name=None</em>, <em>sklearn_output=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">sklearn.base.BaseEstimator</span></code></p>
+<p>Transformer abstract class freely inspired by Scikit-Learn.</p>
+<p>See <a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/base.py">TransformerMixin</a>
+for more details, the main differences are the parameters type and the returns.
+Note: that this inherits from sklearn BaseEstimator to simplify the parameters managment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – provide a name for this transfomer</li>
+<li><strong>sklearn_output</strong> – if True produces outputs compatible with sklearn Pipeline</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the Transformer parameters.</p>
+<p>If <cite>x</cite> or <cite>y</cite> are not Pandas DataFrame not fit will be performed</p>
+<p>Note: <cite>y=None</cite> as default is to be compliant with scikit-learn</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.fit_transform">
+<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.fit_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply <cite>fit</cite> and <cite>transform</cite> functions.</p>
+<p>Note: <cite>y=None</cite> as default is to be compliant with scikit-learn</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_new:</th><td class="field-body">the new transformed x</td>
+</tr>
+<tr class="field-even field"><th class="field-name">return y_new:</th><td class="field-body">the new transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.fit_transform_x">
+<code class="descname">fit_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.fit_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.fit_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply <cite>fit</cite> and <cite>transform</cite> functions only on <cite>x</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_new:</th><td class="field-body">the new transformed x</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.fit_transform_y">
+<code class="descname">fit_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.fit_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.fit_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply <cite>fit</cite> and <cite>transform</cite> functions only on <cite>y</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return y_new:</th><td class="field-body">the new transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the Transformer parameters for <cite>x</cite>.</p>
+<p>This function is intended for implementing the
+computation of the parameters needed for transform function.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><cite>NotImplementedError</cite>: function not implemented</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the Transformer parameters for <cite>y</cite>.</p>
+<p>This function is intended for implementing the
+computation of the parameters needed for transform function.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><cite>NotImplementedError</cite>: function not implemented</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.inverse_transform">
+<code class="descname">inverse_transform</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse transform <cite>x</cite> and <cite>y</cite>.</p>
+<p>This function is intended to implement the inverse
+transform to get back to the original x and y.</p>
+<p>Note: <cite>y=None</cite> as default is to be compliant with scikit-learn</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_org:</th><td class="field-body">the new inverse transformed x</td>
+</tr>
+<tr class="field-even field"><th class="field-name">return y_org:</th><td class="field-body">the new inverse transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse transform <cite>x</cite>.</p>
+<p>This function is intended to implement the inverse
+transform to get back to the original x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_org:</th><td class="field-body">the original inverse transformed x</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><cite>NotImplementedError</cite>: function not implemented</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse transform <cite>y</cite>.</p>
+<p>This function is intended to implement the inverse
+transform to get back to the original y.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return y_org:</th><td class="field-body">the original inverse transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><cite>NotImplementedError</cite>: function not implemented</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.logging">
+<code class="descname">logging</code><span class="sig-paren">(</span><em>msg</em>, <em>level=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to log info related to Transformer</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param msg:</th><td class="field-body">the message to log</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param level:</th><td class="field-body">logging level enum (<a class="reference external" href="https://docs.python.org/2/library/logging.html#logging-levels">https://docs.python.org/2/library/logging.html#logging-levels</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform <cite>x</cite> and <cite>y</cite>.</p>
+<p>If <cite>x</cite> or <cite>y</cite> are not Pandas DataFrame the original value will be returned</p>
+<p>Note: <cite>y=None</cite> as default is to be compliant with scikit-learn</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_new:</th><td class="field-body">the new transformed x</td>
+</tr>
+<tr class="field-even field"><th class="field-name">return y_new:</th><td class="field-body">the new transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">This can be parallelized in computation on x and y</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform <cite>x</cite>.</p>
+<p>This function is intended to implement the actual transformation on
+x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_new:</th><td class="field-body">the new transformed x</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><cite>NotImplementedError</cite>: function not implemented</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Transformer.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Transformer.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Transformer.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform <cite>y</cite>.</p>
+<p>This function is intended to implement the actual transformation on
+y.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return y_new:</th><td class="field-body">the new transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Raises:</dt>
+<dd><cite>NotImplementedError</cite>: function not implemented</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.base.abstract.Pipe">
+<em class="property">class </em><code class="descclassname">pipesnake.base.abstract.</code><code class="descname">Pipe</code><span class="sig-paren">(</span><em>transformers=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Pipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Pipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Pipe abstract class to apply a list of transformers.</p>
+<p>This provides all basic wiring to deal with list of transformers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – a name for this pipe object</li>
+<li><strong>transformers</strong> – a list of transfomers</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pipesnake.base.abstract.Pipe.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>transformer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Pipe.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Pipe.append" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Pipe.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Pipe.clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Pipe.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone this object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Pipe.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>transformers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Pipe.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Pipe.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy a list of <a class="reference internal" href="#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></a> objects to this object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.base.abstract.Pipe.extend">
+<code class="descname">extend</code><span class="sig-paren">(</span><em>transformers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/base/abstract.html#Pipe.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.base.abstract.Pipe.extend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.base.utils">
+<span id="pipesnake-base-utils-module"></span><h2>pipesnake.base.utils module<a class="headerlink" href="#module-pipesnake.base.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pipesnake.base">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pipesnake.base" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-pipesnake.base" title="pipesnake.base"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.base</span></code></a> module implements base abstract classes.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pipesnake.base package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pipesnake.base.abstract">pipesnake.base.abstract module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.base.utils">pipesnake.base.utils module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.base">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pipesnake.html"
+                        title="previous chapter">pipesnake package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pipesnake.pipe.html"
+                        title="next chapter">pipesnake.pipe package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pipesnake.base.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.pipe.html" title="pipesnake.pipe package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.html" title="pipesnake package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" >pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1545 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.transformers package &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pipesnake.utils package" href="pipesnake.utils.html" />
+    <link rel="prev" title="pipesnake.pipe package" href="pipesnake.pipe.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.utils.html" title="pipesnake.utils package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.pipe.html" title="pipesnake.pipe package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" accesskey="U">pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pipesnake-transformers-package">
+<h1>pipesnake.transformers package<a class="headerlink" href="#pipesnake-transformers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pipesnake.transformers.combiner">
+<span id="pipesnake-transformers-combiner-module"></span><h2>pipesnake.transformers.combiner module<a class="headerlink" href="#module-pipesnake.transformers.combiner" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.combiner.Combiner">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.combiner.</code><code class="descname">Combiner</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>func=None</em>, <em>inv_func=None</em>, <em>as_dataframe=False</em>, <em>reset_index=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Apply user function to a column or a set of columns</p>
+<p>This <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> applies <cite>func</cite> to the provided list of columns or list of lists of columns.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices (or list of lists for multi-parameter func)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices (or list of lists for multi-parameter func)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param func:</th><td class="field-body">the functor for the function to be applied</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param inv_func:</th><td class="field-body">the functor for the inverse function to be applied</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param as_dataframe:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">boolean if true the subset dataframe is passed to func (default: <cite>False</cite>) and the function
+is expected to return a DataFrame</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param reset_index:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if true when the results of transformers get concatenated
+the index are reset otherwise the original index is kept (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">combiner</span> <span class="o">=</span> <span class="n">Combiner</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]],</span> <span class="n">func</span><span class="o">=</span><span class="n">mult</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># This will return 2 columns where each item is the combination (multiplication) of</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># items taken from the provided columns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">combiner</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Combiner.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Combiner.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Combiner.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Combiner.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Combiner.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Combiner.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Combiner.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Combiner.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.combiner.Roller">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.combiner.</code><code class="descname">Roller</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>roll_func=None</em>, <em>inv_roll_func=None</em>, <em>window=3</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Roller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Roller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pipesnake.transformers.combiner.Combiner" title="pipesnake.transformers.combiner.Combiner"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.transformers.combiner.Combiner</span></code></a></p>
+<p>Apply the provided function rolling within a given window</p>
+<p>Note: resulting columns may contain nan (typically a total of <cite>window-1</cite> at the beginning)</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices (or list of lists for multi-parameter func)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices (or list of lists for multi-parameter func)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param func:</th><td class="field-body">the functor for the function to be applied (default: <cite>None</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param inv_func:</th><td class="field-body">the functor for the inverse function to be applied (default: <cite>None</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param window:</th><td class="field-body">an integer indicating the window size (default: <cite>3</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">roller</span> <span class="o">=</span> <span class="n">Roller</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roll_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">roller</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Roller.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Roller.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Roller.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Roller.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Roller.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Roller.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Roller.roller_func">
+<code class="descname">roller_func</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Roller.roller_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Roller.roller_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.combiner.Roller.roller_inv_func">
+<code class="descname">roller_inv_func</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/combiner.html#Roller.roller_inv_func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.combiner.Roller.roller_inv_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.converter">
+<span id="pipesnake-transformers-converter-module"></span><h2>pipesnake.transformers.converter module<a class="headerlink" href="#module-pipesnake.transformers.converter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.converter.Category2Number">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.converter.</code><code class="descname">Category2Number</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>skipna=False</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Convert categorical to number.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param skipna:</th><td class="field-body">if True the null values (None, NaN, …) will not be replaced (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cat2num</span> <span class="o">=</span> <span class="n">Category2Number</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_1&#39;</span><span class="p">],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y_1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">cat2num</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.converter.Category2Number.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the list of columns to be converted for <cite>x</cite> and related mappings.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Return:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.converter.Category2Number.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the list of columns to be converted for <cite>y</cite> and related mappings.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Return:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.converter.Category2Number.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.converter.Category2Number.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.converter.Category2Number.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.converter.Category2Number.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/converter.html#Category2Number.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.converter.Category2Number.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.deeplearning">
+<span id="pipesnake-transformers-deeplearning-module"></span><h2>pipesnake.transformers.deeplearning module<a class="headerlink" href="#module-pipesnake.transformers.deeplearning" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.deeplearning.</code><code class="descname">LSTMPacker</code><span class="sig-paren">(</span><em>sequence_len=2</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Pack rows in order to be used as input for LSTM networks.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param sequence_len:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">the size of the sequences to be created (default: <cite>2</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">packer</span> <span class="o">=</span> <span class="n">LSTMPacker</span><span class="p">(</span><span class="n">sequence_len</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">packer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.deeplearning.LSTMPacker.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/deeplearning.html#LSTMPacker.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.deeplearning.LSTMPacker.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.dropper">
+<span id="pipesnake-transformers-dropper-module"></span><h2>pipesnake.transformers.dropper module<a class="headerlink" href="#module-pipesnake.transformers.dropper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.dropper.DropDuplicates">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.dropper.</code><code class="descname">DropDuplicates</code><span class="sig-paren">(</span><em>on_rows=True</em>, <em>on_cols=True</em>, <em>on_x=True</em>, <em>on_y=False</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Drop duplicated rows and/or cols.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param on_rows:</th><td class="field-body">remove duplicated rows (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param on_cols:</th><td class="field-body">remove duplicated columns (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dropper</span> <span class="o">=</span> <span class="n">DropDuplicates</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">dropper</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropDuplicates.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropDuplicates.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropDuplicates.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropDuplicates.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropDuplicates.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropDuplicates.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropDuplicates.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropDuplicates.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.dropper.DropNanCols">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.dropper.</code><code class="descname">DropNanCols</code><span class="sig-paren">(</span><em>how='any'</em>, <em>on_x=True</em>, <em>on_y=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Drop cols with nans.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param how:</th><td class="field-body">‘any’ if any NA values are present, ‘all’ if all values are NA (default: <cite>‘any’</cite>). More details: <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.dropna.html">https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.dropna.html</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">param on_x:</th><td class="field-body">apply on <cite>x</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param on_y:</th><td class="field-body">apply on <cite>y</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dropper</span> <span class="o">=</span> <span class="n">DropNanCols</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">dropper</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanCols.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanCols.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanCols.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanCols.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanCols.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanCols.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanCols.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanCols.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.dropper.DropNanRows">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.dropper.</code><code class="descname">DropNanRows</code><span class="sig-paren">(</span><em>how='any'</em>, <em>on_x=True</em>, <em>on_y=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Drop rows with <cite>any</cite> or <cite>all</cite> nans.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param how:</th><td class="field-body">‘any’ if any NA values are present, ‘all’ if all values are NA (default: <cite>‘any’</cite>) More details: <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.dropna.html">https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.dropna.html</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">param on_x:</th><td class="field-body">apply on <cite>x</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param on_y:</th><td class="field-body">apply on <cite>y</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dropper</span> <span class="o">=</span> <span class="n">DropNanRows</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">dropper</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanRows.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanRows.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanRows.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanRows.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanRows.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.dropper.DropNanRows.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/dropper.html#DropNanRows.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.dropper.DropNanRows.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.financial">
+<span id="pipesnake-transformers-financial-module"></span><h2>pipesnake.transformers.financial module<a class="headerlink" href="#module-pipesnake.transformers.financial" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.financial.ToReturn">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.financial.</code><code class="descname">ToReturn</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/financial.html#ToReturn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.financial.ToReturn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pipesnake.transformers.combiner.Roller" title="pipesnake.transformers.combiner.Roller"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.transformers.combiner.Roller</span></code></a></p>
+<p>Convert columns to <cite>financial return</cite>: r_t = (x_t - x_{t-1}) / x_{t-1}.</p>
+<p>Note: resulting columns may contain inf and nan</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">returner</span> <span class="o">=</span> <span class="n">ToReturn</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">y_cols</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">returner</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="staticmethod">
+<dt id="pipesnake.transformers.financial.ToReturn.func">
+<em class="property">static </em><code class="descname">func</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/financial.html#ToReturn.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.financial.ToReturn.func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.imputer">
+<span id="pipesnake-transformers-imputer-module"></span><h2>pipesnake.transformers.imputer module<a class="headerlink" href="#module-pipesnake.transformers.imputer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.imputer.</code><code class="descname">ReplaceImputer</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>value='median'</em>, <em>method=None</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Impute NaNs replacing them.</p>
+<p>Replace NaNs using different strategies. Note that categorical columns will not be imputed see <code class="xref py py-class docutils literal"><span class="pre">Category2Number</span></code></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param value:</th><td class="field-body">the value to be used in the imputation, it can be a number or <cite>‘mean’</cite> or <cite>‘median’</cite>, in the last
+two cases the value is the mean or the median of the given column</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param method:</th><td class="field-body">{<cite>backfill</cite>, <cite>bfill</cite>, <cite>pad</cite>, <cite>ffill</cite>, <cite>None</cite>}, (default: <cite>None</cite>). Method to use for filling holes
+in reindexed Series pad / ffill: propagate last valid observation forward to next valid
+backfill / bfill: use NEXT valid observation to fill gap. More details: <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.fillna.html">https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.fillna.html</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">imputer</span> <span class="o">=</span> <span class="n">ReplaceImputer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.ReplaceImputer.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#ReplaceImputer.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.ReplaceImputer.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.imputer.KnnImputer">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.imputer.</code><code class="descname">KnnImputer</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>k=3</em>, <em>x_is_categorical=None</em>, <em>y_is_categorical=None</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Impute NaNs using K-nearest neighbors.</p>
+<p>Replace NaNs using different Knn approach</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param k:</th><td class="field-body">k value for Knn algorithm</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param x_is_categorical:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">a list of boolean indicating categorical columns, if <cite>None</cite> categorical will be autodetect
+using the type of the column, all non numerical columns will be treated as categorical (default: <cite>None</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param y_is_categorical:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">a list of boolean indicating categorical columns, if <cite>None</cite> categorical will be autodetect
+using the type of the column, all non numerical columns will be treated as categorical (default: <cite>None</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">imputer</span> <span class="o">=</span> <span class="n">KnnImputer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.KnnImputer.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.KnnImputer.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.KnnImputer.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.KnnImputer.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.KnnImputer.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.imputer.KnnImputer.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/imputer.html#KnnImputer.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.imputer.KnnImputer.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.misc">
+<span id="pipesnake-transformers-misc-module"></span><h2>pipesnake.transformers.misc module<a class="headerlink" href="#module-pipesnake.transformers.misc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.misc.ToNumpy">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.misc.</code><code class="descname">ToNumpy</code><span class="sig-paren">(</span><em>as_type=&lt;class 'float'&gt;</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Convert <cite>x</cite> and <cite>y</cite> to a particular numpy type.</p>
+<p>The common case is that once you have your data pipeline you need to make it
+compatible with numpy so that scikit-learn can use it without any issue.
+Typically this transformer is the last one in the pipelines so that the output
+is ready to feed a scikit-learn pipeline.</p>
+<p>Note: this will not <cite>y.ravel()</cite> as far in pipesnake also target can be a matrix</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param as_type:</th><td class="field-body">is the final type you want to convert the dataframes (default: <cite>float</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">astype</span> <span class="o">=</span> <span class="n">ToNumpy</span><span class="p">(</span><span class="n">as_type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">astype</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ToNumpy.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ToNumpy.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ToNumpy.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ToNumpy.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ToNumpy.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ToNumpy.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ToNumpy.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ToNumpy.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.misc.ColumnRenamer">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.misc.</code><code class="descname">ColumnRenamer</code><span class="sig-paren">(</span><em>prefix=''</em>, <em>postfix=''</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Rename <cite>x</cite> and <cite>y</cite> columns.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param prefix:</th><td class="field-body">prefix for column names (default: <cite>‘’</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param postfix:</th><td class="field-body">postfix for column names (default: <cite>‘’</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">renamer</span> <span class="o">=</span> <span class="n">ColumnRenamer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">renamer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ColumnRenamer.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ColumnRenamer.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ColumnRenamer.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ColumnRenamer.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ColumnRenamer.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.ColumnRenamer.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#ColumnRenamer.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.ColumnRenamer.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.misc.Copycat">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.misc.</code><code class="descname">Copycat</code><span class="sig-paren">(</span><em>on_x=True</em>, <em>on_y=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Copy the datasets forward.</p>
+<p>This is typically used to replicate dataset inside <code class="xref py py-class docutils literal"><span class="pre">ParallelPipe</span></code> to augment features and/or targets.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param on_x:</th><td class="field-body">apply on <cite>x</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param on_y:</th><td class="field-body">apply on <cite>y</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pipesnake.transformers.misc.Copycat.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.Copycat.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.Copycat.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.Copycat.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.Copycat.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.misc.Copycat.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/misc.html#Copycat.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.misc.Copycat.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.scaler">
+<span id="pipesnake-transformers-scaler-module"></span><h2>pipesnake.transformers.scaler module<a class="headerlink" href="#module-pipesnake.transformers.scaler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.scaler.</code><code class="descname">MinMaxScaler</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>min_value=-1.0</em>, <em>max_value=1.0</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Min max scaler.</p>
+<p>This will scale the data (by columns) to fit [min; max] interval.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param min_value:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">min value after scaling (default: <cite>1.0</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param max_value:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">max value after scaling (default: <cite>1.0</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_1&#39;</span><span class="p">],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y_1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MinMaxScaler.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MinMaxScaler.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MinMaxScaler.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.scaler.StdScaler">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.scaler.</code><code class="descname">StdScaler</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>k=3.0</em>, <em>skipna=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Standard deviation scaler.</p>
+<p>This will scale the data (by columns) following x’ = ( x - mean(X) ) / ( k * std(X) ).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param k:</th><td class="field-body">is a scaling factor for the standard deviation (default: <cite>3.0</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param skipna:</th><td class="field-body">exclude NA/null values when computing the result (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">StdScaler</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_1&#39;</span><span class="p">],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y_1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.StdScaler.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.StdScaler.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.StdScaler.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.StdScaler.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.StdScaler.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.StdScaler.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#StdScaler.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.StdScaler.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.scaler.MadScaler">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.scaler.</code><code class="descname">MadScaler</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>k=3.0</em>, <em>skipna=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Median absolute deviation scaler.</p>
+<p>This will scale the data (by columns) following x’ = ( x - median(X) ) / ( k * mad(X) ).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param k:</th><td class="field-body">is a scaling factor for the standard deviation (default: <cite>3.0</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param skipna:</th><td class="field-body">exclude NA/null values when computing the result (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">MadScaler</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_1&#39;</span><span class="p">],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y_1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MadScaler.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MadScaler.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MadScaler.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MadScaler.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MadScaler.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.MadScaler.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#MadScaler.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.MadScaler.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.scaler.</code><code class="descname">UnitLenghtScaler</code><span class="sig-paren">(</span><em>x_cols='all'</em>, <em>y_cols=[]</em>, <em>invertible=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Scale the feature vector to have norm 1.0.</p>
+<p>This will scale the data (by row) following X’ = X / norm(X).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param invertible:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if true collect additional data make the transformer invertible. Note that
+this requires to store one value for each row in <cite>x</cite> and <cite>y</cite> (default: <cite>True</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this transformer</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">UnitLenghtScaler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.scaler.UnitLenghtScaler.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/scaler.html#UnitLenghtScaler.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.scaler.UnitLenghtScaler.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.selector">
+<span id="pipesnake-transformers-selector-module"></span><h2>pipesnake.transformers.selector module<a class="headerlink" href="#module-pipesnake.transformers.selector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.selector.ColumnSelector">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.selector.</code><code class="descname">ColumnSelector</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Select a given list of column names to keep</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">selector</span> <span class="o">=</span> <span class="n">ColumnSelector</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;column_A&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># This will return an x DataFrame with only &#39;column_A&#39; and the 8th column, and a y DataFrame</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># with just the first column</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.selector.ColumnSelector.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the list of columns to be kept for x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Return:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.selector.ColumnSelector.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the list of columns to be kept for y.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Return:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param self:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.selector.ColumnSelector.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removing columns is not invertible as transformation.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x:</th><td class="field-body">no inverse transform is applied</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.selector.ColumnSelector.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removing columns is not invertible as transformation.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return y:</th><td class="field-body">no inverse transform is applied</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.selector.ColumnSelector.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform x just dropping irrelevant columns.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x:</th><td class="field-body">a Pandas Dataframe of shape [n_samples, n_features] the dataset</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:s</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return x_new:</th><td class="field-body">the new transformed x</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.selector.ColumnSelector.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/selector.html#ColumnSelector.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.selector.ColumnSelector.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform y just dropping irrelevant columns.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param y:</th><td class="field-body">a Pandas Dataframe of shape [n_samples] the target</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Returns:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">return y_new:</th><td class="field-body">the new transformed y</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers.stats">
+<span id="pipesnake-transformers-stats-module"></span><h2>pipesnake.transformers.stats module<a class="headerlink" href="#module-pipesnake.transformers.stats" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability">
+<em class="property">class </em><code class="descclassname">pipesnake.transformers.stats.</code><code class="descname">ToSymbolProbability</code><span class="sig-paren">(</span><em>x_cols=[]</em>, <em>y_cols=[]</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p>Convert values in columns to their probabilities.</p>
+<p>The transfomer estimate the histogram (<cite>pdf</cite>) for the provided columns and
+then convert original values to probability <cite>x_new = pdf(x)</cite></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">param x_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param y_cols:</th><td class="field-body">a list of columns name or a list of indices; ‘all’ to use all columns; if [] no columns will be affected</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline (default: <cite>False</cite>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">topb</span> <span class="o">=</span> <span class="n">ToSymbolProbability</span><span class="p">(</span><span class="n">x_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_1&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="n">topb</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability.fit_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability.fit_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability.inverse_transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability.inverse_transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability.transform_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.transformers.stats.ToSymbolProbability.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/transformers/stats.html#ToSymbolProbability.transform_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.transformers.stats.ToSymbolProbability.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.transformers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pipesnake.transformers" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-pipesnake.transformers" title="pipesnake.transformers"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers</span></code></a> module implements several transformers.</p>
+<p>Here is a short list of the main modules:</p>
+<p><a class="reference internal" href="#module-pipesnake.transformers.combiner" title="pipesnake.transformers.combiner"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.combiner</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.converter" title="pipesnake.transformers.converter"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.converter</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.deeplearning" title="pipesnake.transformers.deeplearning"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.deeplearning</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.dropper" title="pipesnake.transformers.dropper"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.dropper</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.financial" title="pipesnake.transformers.financial"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.financial</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.imputer" title="pipesnake.transformers.imputer"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.imputer</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.misc" title="pipesnake.transformers.misc"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.misc</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.scaler" title="pipesnake.transformers.scaler"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.scaler</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.selector" title="pipesnake.transformers.selector"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.selector</span></code></a>
+<a class="reference internal" href="#module-pipesnake.transformers.stats" title="pipesnake.transformers.stats"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.transformers.stats</span></code></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pipesnake.transformers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.combiner">pipesnake.transformers.combiner module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.converter">pipesnake.transformers.converter module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.deeplearning">pipesnake.transformers.deeplearning module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.dropper">pipesnake.transformers.dropper module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.financial">pipesnake.transformers.financial module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.imputer">pipesnake.transformers.imputer module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.misc">pipesnake.transformers.misc module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.scaler">pipesnake.transformers.scaler module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.selector">pipesnake.transformers.selector module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers.stats">pipesnake.transformers.stats module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.transformers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pipesnake.pipe.html"
+                        title="previous chapter">pipesnake.pipe package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pipesnake.utils.html"
+                        title="next chapter">pipesnake.utils package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pipesnake.transformers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.utils.html" title="pipesnake.utils package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.pipe.html" title="pipesnake.pipe package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" >pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

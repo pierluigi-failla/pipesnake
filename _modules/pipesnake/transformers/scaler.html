@@ -1,0 +1,405 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.transformers.scaler &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pipesnake.transformers.scaler</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">pipesnake.base</span> <span class="k">import</span> <span class="n">Transformer</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_check_cols</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;MinMaxScaler&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;StdScaler&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MadScaler&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;UnitLenghtScaler&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="MinMaxScaler"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler">[docs]</a><span class="k">class</span> <span class="nc">MinMaxScaler</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Min max scaler.</span>
+
+<span class="sd">    This will scale the data (by columns) to fit [min; max] interval.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param min_value: min value after scaling (default: `1.0`)</span>
+<span class="sd">        :param max_value: max value after scaling (default: `1.0`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; scaler = MinMaxScaler(x_cols=[&#39;x_1&#39;], y_cols=[&#39;y_1&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = scaler.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">min_value</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span> <span class="o">=</span> <span class="n">min_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_value</span> <span class="o">=</span> <span class="n">max_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span>
+        <span class="c1"># the inverse mapping is needed to invert the transformation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+<div class="viewcode-block" id="MinMaxScaler.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="MinMaxScaler.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="MinMaxScaler.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="MinMaxScaler.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span>
+        <span class="k">return</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="MinMaxScaler.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_min</span><span class="p">,</span> <span class="n">_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">*</span> <span class="p">(</span><span class="n">_max</span> <span class="o">-</span> <span class="n">_min</span><span class="p">)</span> <span class="o">+</span> <span class="n">_min</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="MinMaxScaler.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MinMaxScaler.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_min</span><span class="p">,</span> <span class="n">_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">*</span> <span class="p">(</span><span class="n">_max</span> <span class="o">-</span> <span class="n">_min</span><span class="p">)</span> <span class="o">+</span> <span class="n">_min</span>
+        <span class="k">return</span> <span class="n">_y</span></div></div>
+
+
+<div class="viewcode-block" id="StdScaler"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler">[docs]</a><span class="k">class</span> <span class="nc">StdScaler</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Standard deviation scaler.</span>
+
+<span class="sd">    This will scale the data (by columns) following x&#39; = ( x - mean(X) ) / ( k * std(X) ).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param k: is a scaling factor for the standard deviation (default: `3.0`)</span>
+<span class="sd">        :param skipna: exclude NA/null values when computing the result (default: `True`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; scaler = StdScaler(x_cols=[&#39;x_1&#39;], y_cols=[&#39;y_1&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = scaler.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">k</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skipna</span> <span class="o">=</span> <span class="n">skipna</span>
+        <span class="c1"># the inverse mapping is needed to invert the transformation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+<div class="viewcode-block" id="StdScaler.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="StdScaler.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="StdScaler.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_mean</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="n">_std</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span><span class="p">)</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">_mean</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_std</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="StdScaler.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_mean</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="n">_std</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span><span class="p">)</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">_mean</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_std</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="StdScaler.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_std</span> <span class="o">+</span> <span class="n">_mean</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="StdScaler.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.StdScaler.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_std</span> <span class="o">+</span> <span class="n">_mean</span>
+        <span class="k">return</span> <span class="n">_y</span></div></div>
+
+
+<div class="viewcode-block" id="MadScaler"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler">[docs]</a><span class="k">class</span> <span class="nc">MadScaler</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Median absolute deviation scaler.</span>
+
+<span class="sd">    This will scale the data (by columns) following x&#39; = ( x - median(X) ) / ( k * mad(X) ).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param k: is a scaling factor for the standard deviation (default: `3.0`)</span>
+<span class="sd">        :param skipna: exclude NA/null values when computing the result (default: `True`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; scaler = MadScaler(x_cols=[&#39;x_1&#39;], y_cols=[&#39;y_1&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = scaler.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">k</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skipna</span> <span class="o">=</span> <span class="n">skipna</span>
+        <span class="c1"># the inverse mapping is needed to invert the transformation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+<div class="viewcode-block" id="MadScaler.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="MadScaler.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="MadScaler.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_median</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="n">_mad</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">mad</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_median</span><span class="p">,</span> <span class="n">_mad</span><span class="p">)</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">_median</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_mad</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="MadScaler.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_median</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="n">_mad</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">mad</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skipna</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_median</span><span class="p">,</span> <span class="n">_mad</span><span class="p">)</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">_median</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_mad</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="MadScaler.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_median</span><span class="p">,</span> <span class="n">_mad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_mad</span> <span class="o">+</span> <span class="n">_median</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="MadScaler.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.MadScaler.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_median</span><span class="p">,</span> <span class="n">_mad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="n">_mad</span> <span class="o">+</span> <span class="n">_median</span>
+        <span class="k">return</span> <span class="n">_y</span></div></div>
+
+
+<div class="viewcode-block" id="UnitLenghtScaler"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler">[docs]</a><span class="k">class</span> <span class="nc">UnitLenghtScaler</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Scale the feature vector to have norm 1.0.</span>
+
+<span class="sd">    This will scale the data (by row) following X&#39; = X / norm(X).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param invertible: if true collect additional data make the transformer invertible. Note that</span>
+<span class="sd">                           this requires to store one value for each row in `x` and `y` (default: `True`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this transformer</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; scaler = UnitLenghtScaler()</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = scaler.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">invertible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">invertible</span> <span class="o">=</span> <span class="n">invertible</span>
+        <span class="c1"># the inverse mapping is needed to invert the transformation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+<div class="viewcode-block" id="UnitLenghtScaler.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="UnitLenghtScaler.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="UnitLenghtScaler.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">invertible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="UnitLenghtScaler.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">invertible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="UnitLenghtScaler.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">invertible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;the transformer has not been set to be invertible, you should set invertible=True&#39;</span><span class="p">,</span>
+                         <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">]</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_x</span></div>
+
+<div class="viewcode-block" id="UnitLenghtScaler.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.scaler.UnitLenghtScaler.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">invertible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;the transformer has not been set to be invertible, you should set invertible=True&#39;</span><span class="p">,</span>
+                         <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">y</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">_y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">]</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inverse_map</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_y</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

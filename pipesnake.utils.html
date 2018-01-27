@@ -1,0 +1,230 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.utils package &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pipesnake.transformers package" href="pipesnake.transformers.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.transformers.html" title="pipesnake.transformers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" accesskey="U">pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pipesnake-utils-package">
+<h1>pipesnake.utils package<a class="headerlink" href="#pipesnake-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pipesnake.utils.decorator">
+<span id="pipesnake-utils-decorator-module"></span><h2>pipesnake.utils.decorator module<a class="headerlink" href="#module-pipesnake.utils.decorator" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pipesnake.utils.decorator.timeit">
+<code class="descclassname">pipesnake.utils.decorator.</code><code class="descname">timeit</code><span class="sig-paren">(</span><em>method</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/decorator.html#timeit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.decorator.timeit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to measure the time spent by a function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipesnake.utils.decorator.memory">
+<code class="descclassname">pipesnake.utils.decorator.</code><code class="descname">memory</code><span class="sig-paren">(</span><em>method</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/decorator.html#memory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.decorator.memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator to measure the memory before and after the function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipesnake.utils.decorator.memoize">
+<code class="descclassname">pipesnake.utils.decorator.</code><code class="descname">memoize</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/decorator.html#memoize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.decorator.memoize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Memoizer</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.utils.graph">
+<span id="pipesnake-utils-graph-module"></span><h2>pipesnake.utils.graph module<a class="headerlink" href="#module-pipesnake.utils.graph" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pipesnake.utils.graph.to_graph">
+<code class="descclassname">pipesnake.utils.graph.</code><code class="descname">to_graph</code><span class="sig-paren">(</span><em>pipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/graph.html#to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.graph.to_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a NetworkX representation of a pipe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pipe</strong> – a pipesnake pipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a NetworkX graph</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipesnake.utils.graph.draw_graph_on_file">
+<code class="descclassname">pipesnake.utils.graph.</code><code class="descname">draw_graph_on_file</code><span class="sig-paren">(</span><em>graph</em>, <em>filename='figure.png'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/graph.html#draw_graph_on_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.graph.draw_graph_on_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a png file with the pipe graph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>graph</strong> – a NetworkX graph</li>
+<li><strong>filename</strong> – a filename for the image</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">It would be nice to have a nice layout for this</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.utils.persistance">
+<span id="pipesnake-utils-persistance-module"></span><h2>pipesnake.utils.persistance module<a class="headerlink" href="#module-pipesnake.utils.persistance" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pipesnake.utils.persistance.dump_pipe">
+<code class="descclassname">pipesnake.utils.persistance.</code><code class="descname">dump_pipe</code><span class="sig-paren">(</span><em>pipe</em>, <em>filename</em>, <em>compress=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/persistance.html#dump_pipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.persistance.dump_pipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump this pipe on file using JobLib.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pipe</strong> – the Pipe inherited object to dump on file</li>
+<li><strong>filename</strong> – the filename to use</li>
+<li><strong>compress</strong> – is True use compressed file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pipesnake.utils.persistance.load_pipe">
+<code class="descclassname">pipesnake.utils.persistance.</code><code class="descname">load_pipe</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils/persistance.html#load_pipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.persistance.load_pipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load pipe from file using JobLib.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – the filename to load</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pipesnake.utils" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-pipesnake.utils" title="pipesnake.utils"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.utils</span></code></a> module implements few utils functions, decorators and more.</p>
+<dl class="function">
+<dt id="pipesnake.utils.to_snake">
+<code class="descclassname">pipesnake.utils.</code><code class="descname">to_snake</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/utils.html#to_snake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.utils.to_snake" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert :param name: to snake case</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pipesnake.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pipesnake.utils.decorator">pipesnake.utils.decorator module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.utils.graph">pipesnake.utils.graph module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.utils.persistance">pipesnake.utils.persistance module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pipesnake.transformers.html"
+                        title="previous chapter">pipesnake.transformers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pipesnake.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.transformers.html" title="pipesnake.transformers package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" >pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

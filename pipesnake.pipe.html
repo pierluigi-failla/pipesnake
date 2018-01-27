@@ -1,0 +1,259 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.pipe package &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pipesnake.transformers package" href="pipesnake.transformers.html" />
+    <link rel="prev" title="pipesnake.base package" href="pipesnake.base.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.transformers.html" title="pipesnake.transformers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.base.html" title="pipesnake.base package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" accesskey="U">pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pipesnake-pipe-package">
+<h1>pipesnake.pipe package<a class="headerlink" href="#pipesnake-pipe-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pipesnake.pipe.parallel">
+<span id="pipesnake-pipe-parallel-module"></span><h2>pipesnake.pipe.parallel module<a class="headerlink" href="#module-pipesnake.pipe.parallel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.pipe.parallel.ParallelPipe">
+<em class="property">class </em><code class="descclassname">pipesnake.pipe.parallel.</code><code class="descname">ParallelPipe</code><span class="sig-paren">(</span><em>transformers=[]</em>, <em>reset_index=True</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/pipe/parallel.html#ParallelPipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Pipe" title="pipesnake.base.abstract.Pipe"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Pipe</span></code></a>, <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p><a class="reference internal" href="#pipesnake.pipe.parallel.ParallelPipe" title="pipesnake.pipe.parallel.ParallelPipe"><code class="xref py py-class docutils literal"><span class="pre">ParallelPipe</span></code></a> applies a list of transformers as parallel.</p>
+<p>The class itself inherits from <code class="xref py py-class docutils literal"><span class="pre">Pipe</span></code> and <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> so that it is possible
+to use this as <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> objects.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param transformers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">a list of <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> objects</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param reset_index:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if true when the results of transformers get concatenated
+the index are reset otherwise the original index is kept</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline</td>
+</tr>
+<tr class="field-even field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pipesnake.pipe.parallel.ParallelPipe.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.parallel.ParallelPipe.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.parallel.ParallelPipe.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.parallel.ParallelPipe.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.parallel.ParallelPipe.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.parallel.ParallelPipe.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.parallel.ParallelPipe.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.pipe.series">
+<span id="pipesnake-pipe-series-module"></span><h2>pipesnake.pipe.series module<a class="headerlink" href="#module-pipesnake.pipe.series" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pipesnake.pipe.series.SeriesPipe">
+<em class="property">class </em><code class="descclassname">pipesnake.pipe.series.</code><code class="descname">SeriesPipe</code><span class="sig-paren">(</span><em>transformers=[]</em>, <em>sklearn_output=False</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pipesnake/pipe/series.html#SeriesPipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Pipe" title="pipesnake.base.abstract.Pipe"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Pipe</span></code></a>, <a class="reference internal" href="pipesnake.base.html#pipesnake.base.abstract.Transformer" title="pipesnake.base.abstract.Transformer"><code class="xref py py-class docutils literal"><span class="pre">pipesnake.base.abstract.Transformer</span></code></a></p>
+<p><a class="reference internal" href="#pipesnake.pipe.series.SeriesPipe" title="pipesnake.pipe.series.SeriesPipe"><code class="xref py py-class docutils literal"><span class="pre">SeriesPipe</span></code></a> applies a list of transformers as series.</p>
+<p>The class itself inherits from <code class="xref py py-class docutils literal"><span class="pre">Pipe</span></code> and <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> so that it is possible
+to use this as <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> objects.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param transformers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">a list of <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code> objects</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param sklearn_output:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">if True produces outputs compatible with sklearn Pipeline</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">param name:</th><td class="field-body">name for this <code class="xref py py-class docutils literal"><span class="pre">Transformer</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pipesnake.pipe.series.SeriesPipe.fit_x">
+<code class="descname">fit_x</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe.fit_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.series.SeriesPipe.fit_y">
+<code class="descname">fit_y</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe.fit_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.series.SeriesPipe.inverse_transform_x">
+<code class="descname">inverse_transform_x</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe.inverse_transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.series.SeriesPipe.inverse_transform_y">
+<code class="descname">inverse_transform_y</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe.inverse_transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.series.SeriesPipe.transform_x">
+<code class="descname">transform_x</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe.transform_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pipesnake.pipe.series.SeriesPipe.transform_y">
+<code class="descname">transform_y</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#pipesnake.pipe.series.SeriesPipe.transform_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pipesnake.pipe">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pipesnake.pipe" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-pipesnake.pipe" title="pipesnake.pipe"><code class="xref py py-mod docutils literal"><span class="pre">pipesnake.pipe</span></code></a> module implements the main pipes.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pipesnake.pipe package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pipesnake.pipe.parallel">pipesnake.pipe.parallel module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.pipe.series">pipesnake.pipe.series module</a></li>
+<li><a class="reference internal" href="#module-pipesnake.pipe">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pipesnake.base.html"
+                        title="previous chapter">pipesnake.base package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pipesnake.transformers.html"
+                        title="next chapter">pipesnake.transformers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pipesnake.pipe.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.transformers.html" title="pipesnake.transformers package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pipesnake.base.html" title="pipesnake.base package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >pipesnake</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pipesnake.html" >pipesnake package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

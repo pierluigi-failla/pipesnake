@@ -1,0 +1,383 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.base.abstract &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pipesnake.base.abstract</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">getrandbits</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span>
+
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_check_input</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.utils</span> <span class="k">import</span> <span class="n">_check_transformer_type</span>
+<span class="kn">from</span> <span class="nn">pipesnake.utils</span> <span class="k">import</span> <span class="n">to_snake</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Transformer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Pipe&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="Transformer"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer">[docs]</a><span class="k">class</span> <span class="nc">Transformer</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transformer abstract class freely inspired by Scikit-Learn.</span>
+
+<span class="sd">     See `TransformerMixin &lt;https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/base.py&gt;`_</span>
+<span class="sd">     for more details, the main differences are the parameters type and the returns.</span>
+<span class="sd">     Note: that this inherits from sklearn BaseEstimator to simplify the parameters managment.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param name: provide a name for this transfomer</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if no name is provided name will be assigned as the class name with a random hex</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">to_snake</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{:02x}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sklearn_output</span> <span class="o">=</span> <span class="n">sklearn_output</span>
+
+<div class="viewcode-block" id="Transformer.fit_x"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.fit_x">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the Transformer parameters for `x`.</span>
+
+<span class="sd">        This function is intended for implementing the</span>
+<span class="sd">        computation of the parameters needed for transform function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param x: a Pandas Dataframe of shape [n_samples, n_features] the dataset</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return self:</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `NotImplementedError`: function not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transformer.fit_y"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.fit_y">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the Transformer parameters for `y`.</span>
+
+<span class="sd">        This function is intended for implementing the</span>
+<span class="sd">        computation of the parameters needed for transform function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param y: a Pandas Dataframe of shape [n_samples] the target</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return self:</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `NotImplementedError`: function not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transformer.fit"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the Transformer parameters.</span>
+
+<span class="sd">        If `x` or `y` are not Pandas DataFrame not fit will be performed</span>
+
+<span class="sd">        Note: `y=None` as default is to be compliant with scikit-learn</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :return self:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;fitting...&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_check_input</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_check_input</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Transformer.transform_x"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.transform_x">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transform `x`.</span>
+
+<span class="sd">        This function is intended to implement the actual transformation on</span>
+<span class="sd">        x.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param x: a Pandas Dataframe of shape [n_samples, n_features] the dataset</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return x_new: the new transformed x</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `NotImplementedError`: function not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transformer.transform_y"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.transform_y">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transform `y`.</span>
+
+<span class="sd">        This function is intended to implement the actual transformation on</span>
+<span class="sd">        y.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param y: a Pandas Dataframe of shape [n_samples] the target</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return y_new: the new transformed y</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `NotImplementedError`: function not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transformer.transform"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transform `x` and `y`.</span>
+
+<span class="sd">        If `x` or `y` are not Pandas DataFrame the original value will be returned</span>
+
+<span class="sd">        Note: `y=None` as default is to be compliant with scikit-learn</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :return x_new: the new transformed x</span>
+<span class="sd">            :return y_new: the new transformed y</span>
+
+<span class="sd">        .. todo:: This can be parallelized in computation on x and y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;transforming...&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="n">_check_input</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">):</span>
+            <span class="n">_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sklearn_output</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_x</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="k">if</span> <span class="n">_check_input</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">):</span>
+            <span class="n">_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_x</span><span class="p">,</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="Transformer.fit_transform"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.fit_transform">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply `fit` and `transform` functions.</span>
+
+<span class="sd">        Note: `y=None` as default is to be compliant with scikit-learn</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param x: a Pandas Dataframe of shape [n_samples, n_features] the dataset</span>
+<span class="sd">            :param y: a Pandas Dataframe of shape [n_samples] the target</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return x_new: the new transformed x</span>
+<span class="sd">            :return y_new: the new transformed y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transformer.fit_transform_x"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.fit_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply `fit` and `transform` functions only on `x`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param x: a Pandas Dataframe of shape [n_samples, n_features] the dataset</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return x_new: the new transformed x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">transform_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transformer.fit_transform_y"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.fit_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply `fit` and `transform` functions only on `y`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param y: a Pandas Dataframe of shape [n_samples] the target</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return y_new: the new transformed y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">transform_y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transformer.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.inverse_transform_x">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform `x`.</span>
+
+<span class="sd">        This function is intended to implement the inverse</span>
+<span class="sd">        transform to get back to the original x.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param x: a Pandas Dataframe of shape [n_samples, n_features] the dataset</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return x_org: the original inverse transformed x</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `NotImplementedError`: function not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transformer.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.inverse_transform_y">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform `y`.</span>
+
+<span class="sd">        This function is intended to implement the inverse</span>
+<span class="sd">        transform to get back to the original y.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param y: a Pandas Dataframe of shape [n_samples] the target</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            :return y_org: the original inverse transformed y</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            `NotImplementedError`: function not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transformer.inverse_transform"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform `x` and `y`.</span>
+
+<span class="sd">        This function is intended to implement the inverse</span>
+<span class="sd">        transform to get back to the original x and y.</span>
+
+<span class="sd">        Note: `y=None` as default is to be compliant with scikit-learn</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :return x_org: the new inverse transformed x</span>
+<span class="sd">            :return y_org: the new inverse transformed y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;inverse transforming...&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="n">_check_input</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">):</span>
+            <span class="n">_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverse_transform_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sklearn_output</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_x</span>
+        <span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="k">if</span> <span class="n">_check_input</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">):</span>
+            <span class="n">_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverse_transform_y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_x</span><span class="p">,</span> <span class="n">_y</span></div>
+
+<div class="viewcode-block" id="Transformer.logging"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Transformer.logging">[docs]</a>    <span class="k">def</span> <span class="nf">logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to log info related to Transformer</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            :param msg: the message to log</span>
+<span class="sd">            :param level: logging level enum (https://docs.python.org/2/library/logging.html#logging-levels)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s1">&#39;[</span><span class="si">{}</span><span class="s1">] : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Pipe"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Pipe">[docs]</a><span class="k">class</span> <span class="nc">Pipe</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pipe abstract class to apply a list of transformers.</span>
+
+<span class="sd">    This provides all basic wiring to deal with list of transformers.</span>
+
+<span class="sd">    :param name: a name for this pipe object</span>
+<span class="sd">    :param transformers: a list of transfomers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformers</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span> <span class="o">=</span> <span class="n">transformers</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;[&#39;</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">transformer</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">_check_transformer_type</span><span class="p">(</span><span class="n">transformer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">),</span> <span class="s1">&#39;Mismatched type: expected Transformer got </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">transformer</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">transformer</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Pipe.copy"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Pipe.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformers</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy a list of :class:`Transformer` objects to this object.&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[:]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transformers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipe.clone"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Pipe.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clone this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipe.append"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Pipe.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformer</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">_check_transformer_type</span><span class="p">(</span><span class="n">transformer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">),</span> <span class="s1">&#39;Mismatched type: expected Transformer got </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">transformer</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipe.extend"><a class="viewcode-back" href="../../../pipesnake.base.html#pipesnake.base.abstract.Pipe.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformers</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transformers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pipesnake.utils.graph &#8212; Pipesnake 0.1.dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../utils.html" accesskey="U">pipesnake.utils</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pipesnake.utils.graph</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span>
+
+<span class="kn">from</span> <span class="nn">pipesnake.base.abstract</span> <span class="k">import</span> <span class="n">Pipe</span>
+<span class="kn">from</span> <span class="nn">pipesnake.base.abstract</span> <span class="k">import</span> <span class="n">Transformer</span>
+<span class="kn">from</span> <span class="nn">pipesnake.pipe.parallel</span> <span class="k">import</span> <span class="n">ParallelPipe</span>
+<span class="kn">from</span> <span class="nn">pipesnake.pipe.series</span> <span class="k">import</span> <span class="n">SeriesPipe</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;to_graph&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;draw_graph_on_file&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_edges</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">heads</span><span class="o">=</span><span class="p">[],</span> <span class="n">edges</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;Computes all the edges (connections) between transformers.</span>
+
+<span class="sd">    This is a bit convoluted, but it does the job</span>
+
+<span class="sd">    :param item: a :class:`Pipe` inherited object</span>
+<span class="sd">    :param heads: used for recursion</span>
+<span class="sd">    :param relations: used for recursion</span>
+<span class="sd">    :return: last head, and the list of edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ParallelPipe</span><span class="p">):</span>
+        <span class="n">new_heads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sub_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">transformers</span><span class="p">:</span>
+            <span class="n">current_head</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_edges</span><span class="p">(</span><span class="n">sub_item</span><span class="p">,</span> <span class="n">heads</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+            <span class="n">new_heads</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">current_head</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_heads</span><span class="p">,</span> <span class="n">_</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">SeriesPipe</span><span class="p">):</span>
+        <span class="n">current_head</span> <span class="o">=</span> <span class="n">heads</span>
+        <span class="k">for</span> <span class="n">sub_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">transformers</span><span class="p">:</span>
+            <span class="n">current_head</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_edges</span><span class="p">(</span><span class="n">sub_item</span><span class="p">,</span> <span class="n">current_head</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">current_head</span><span class="p">,</span> <span class="n">_</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Transformer</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">heads</span><span class="p">:</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">head</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unexpected object type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">edges</span>
+
+
+<span class="k">def</span> <span class="nf">_get_nodes</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;Get the list of nodes (aka list of :class:`Transformer`) and their params</span>
+
+<span class="sd">    :param item: a :class:`Pipe` inherited object</span>
+<span class="sd">    :param nodes: used for recursion</span>
+<span class="sd">    :return: the list of nodes names and their params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ParallelPipe</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">SeriesPipe</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">sub_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">transformers</span><span class="p">:</span>
+            <span class="n">_get_nodes</span><span class="p">(</span><span class="n">sub_item</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Transformer</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">get_params</span><span class="p">()))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unexpected object type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">nodes</span>
+
+
+<div class="viewcode-block" id="to_graph"><a class="viewcode-back" href="../../../pipesnake.utils.html#pipesnake.utils.graph.to_graph">[docs]</a><span class="k">def</span> <span class="nf">to_graph</span><span class="p">(</span><span class="n">pipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a NetworkX representation of a pipe</span>
+
+<span class="sd">    :param pipe: a pipesnake pipe</span>
+<span class="sd">    :return: a NetworkX graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">pipe</span><span class="p">),</span> <span class="n">Pipe</span><span class="p">),</span> <span class="s1">&#39;Mismatched type: expected Pipe got </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">pipe</span><span class="p">))</span>
+
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">networkx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">_get_nodes</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">_get_edges</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">heads</span><span class="o">=</span><span class="p">[],</span> <span class="n">edges</span><span class="o">=</span><span class="p">[])</span>
+    <span class="k">for</span> <span class="n">_from</span><span class="p">,</span> <span class="n">_to</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">_from</span><span class="p">,</span> <span class="n">_to</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="draw_graph_on_file"><a class="viewcode-back" href="../../../pipesnake.utils.html#pipesnake.utils.graph.draw_graph_on_file">[docs]</a><span class="k">def</span> <span class="nf">draw_graph_on_file</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;figure.png&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save a png file with the pipe graph</span>
+
+<span class="sd">    :param graph: a NetworkX graph</span>
+<span class="sd">    :param filename: a filename for the image</span>
+
+<span class="sd">    .. todo:: It would be nice to have a nice layout for this</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;matplotlib is not installed&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">networkx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">networkx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;skyblue&#39;</span><span class="p">,</span> <span class="n">node_shape</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.65</span><span class="p">)</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Pipesnake 0.1.dev documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../utils.html" >pipesnake.utils</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018 Pierluigi Failla.
+    </div>
+  </body>
+</html>

@@ -6,7 +6,7 @@
 Dataframes are used to clean-up data, pre-processing it and to perform feature engineering, 
 `pipesnake` tries to simplify these steps, creating complex pipelines.
 
-[documentation](docs/source/index.rst); [examples](examples/README.md);
+[documentation](https://pierluigi-failla.github.io/pipesnake/); [examples](examples/README.md);
 
 ## Why?
 

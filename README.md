@@ -1,6 +1,6 @@
 # `pipesnake`
 
-*a pandas sklearn-inspired pipeline data processor*
+*a [Pandas](https://pandas.pydata.org/) [Scikit-Learn](http://scikit-learn.org) inspired pipeline data processor and feature engineering for Python 3*
 
 `pipesnake` is a data processing pipeline able to handle Pandas Dataframes. In many cases
 Dataframes are used to clean-up data, pre-processing it and to perform feature engineering, 

@@ -51,7 +51,9 @@ def build_support(x):
 
 def build_pdf(x, density=True):
     """Compute the histogram (pdf) of the data"""
-    hist, edges = numpy.histogram(x, bins=build_support(x), density=density)
+    hist, edges = numpy.histogram(x, bins=build_support(x))
+    if density:
+        hist = hist / numpy.sum(hist)
     return hist, edges
 
 

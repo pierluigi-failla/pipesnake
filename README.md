@@ -106,6 +106,7 @@ Module | Name | Short Description
 `pipenskae.transformers.scaler` | `MadScaler` | Median absolute deviation scaler
 `pipenskae.transformers.scaler` | `UnitLenghtScaler` | Scale the feature vector to have norm 1.0
 `pipenskae.transformers.selector` | `ColumnSelector` | Select a given list of column names to keep
+`pipenskae.transformers.stats` | `Digitize` | Digitize values in columns based on their `pdf`
 `pipenskae.transformers.stats` | `ToSymbolProbability` | Convert values in columns to their probabilities
 
 # How can you contribute to `pipesnake` ?

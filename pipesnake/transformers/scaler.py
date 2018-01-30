@@ -21,8 +21,8 @@ class MinMaxScaler(Transformer):
     This will scale the data (by columns) to fit [min; max] interval.
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param min_value: min value after scaling (default: `1.0`)
         :param max_value: max value after scaling (default: `1.0`)
         :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)
@@ -95,8 +95,8 @@ class StdScaler(Transformer):
     This will scale the data (by columns) following x' = ( x - mean(X) ) / ( k * std(X) ).
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param k: is a scaling factor for the standard deviation (default: `3.0`)
         :param skipna: exclude NA/null values when computing the result (default: `True`)
         :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)
@@ -170,8 +170,8 @@ class MadScaler(Transformer):
     This will scale the data (by columns) following x' = ( x - median(X) ) / ( k * mad(X) ).
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param k: is a scaling factor for the standard deviation (default: `3.0`)
         :param skipna: exclude NA/null values when computing the result (default: `True`)
         :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)
@@ -245,8 +245,8 @@ class UnitLenghtScaler(Transformer):
     This will scale the data (by row) following X' = X / norm(X).
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param invertible: if true collect additional data make the transformer invertible. Note that
                            this requires to store one value for each row in `x` and `y` (default: `True`)
         :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)

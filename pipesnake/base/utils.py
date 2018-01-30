@@ -66,6 +66,8 @@ def _check_cols(df, cols, logger):
                 _cols.append(df.columns.values[c])
             else:
                 _cols.append(c)
+        if len(_cols) == 0:
+            logger('empty list of columns', level=logging.DEBUG)
         return _cols
     else:
         logger('unknown type of columns: {} ({})'.format(type(cols), cols), level=logging.WARNING)

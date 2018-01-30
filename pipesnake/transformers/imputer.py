@@ -24,8 +24,8 @@ class ReplaceImputer(Transformer):
     Replace NaNs using different strategies. Note that categorical columns will not be imputed see :class:`Category2Number`
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param value: the value to be used in the imputation, it can be a number or `'mean'` or `'median'`, in the last
                       two cases the value is the mean or the median of the given column
         :param method:  {`backfill`, `bfill`, `pad`, `ffill`, `None`}, (default: `None`). Method to use for filling holes
@@ -91,8 +91,8 @@ class KnnImputer(Transformer):
     Replace NaNs using different Knn approach
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param k: k value for Knn algorithm
         :param x_is_categorical: a list of boolean indicating categorical columns, if `None` categorical will be autodetect
                                  using the type of the column, all non numerical columns will be treated as categorical (default: `None`)

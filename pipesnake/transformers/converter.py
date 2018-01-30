@@ -15,8 +15,8 @@ class Category2Number(Transformer):
     """Convert categorical to number.
 
     Args:
-        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
-        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected
+        :param x_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
+        :param y_cols: a list of columns name or a list of indices; 'all' to use all columns; if [] no columns will be affected (default: `[]`)
         :param skipna: if True the null values (None, NaN, ...) will not be replaced (default: `False`)
         :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)
         :param name: name for this :class:`Transformer`

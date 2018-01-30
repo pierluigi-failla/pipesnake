@@ -2,7 +2,7 @@
 
 Run `sphinx-apidoc -o source ../pipesnake`.
 
-This will generate `modules.rst` and the other `pipesnake.rst`.
+This will generate `modules.rst` and the other `pipesnake.*.rst` files.
 
 Then include `modules.rst` in your `index.rst` file.
 

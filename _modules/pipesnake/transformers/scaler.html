@@ -68,8 +68,8 @@
 <span class="sd">    This will scale the data (by columns) to fit [min; max] interval.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param min_value: min value after scaling (default: `1.0`)</span>
 <span class="sd">        :param max_value: max value after scaling (default: `1.0`)</span>
 <span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
@@ -142,8 +142,8 @@
 <span class="sd">    This will scale the data (by columns) following x&#39; = ( x - mean(X) ) / ( k * std(X) ).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param k: is a scaling factor for the standard deviation (default: `3.0`)</span>
 <span class="sd">        :param skipna: exclude NA/null values when computing the result (default: `True`)</span>
 <span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
@@ -217,8 +217,8 @@
 <span class="sd">    This will scale the data (by columns) following x&#39; = ( x - median(X) ) / ( k * mad(X) ).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param k: is a scaling factor for the standard deviation (default: `3.0`)</span>
 <span class="sd">        :param skipna: exclude NA/null values when computing the result (default: `True`)</span>
 <span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
@@ -292,8 +292,8 @@
 <span class="sd">    This will scale the data (by row) following X&#39; = X / norm(X).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param invertible: if true collect additional data make the transformer invertible. Note that</span>
 <span class="sd">                           this requires to store one value for each row in `x` and `y` (default: `True`)</span>
 <span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>

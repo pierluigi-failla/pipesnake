@@ -57,6 +57,7 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;ToSymbolProbability&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Digitize&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -96,21 +97,25 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">_min</span> <span class="o">-</span> <span class="n">_delta</span><span class="p">,</span> <span class="n">_max</span> <span class="o">+</span> <span class="n">_delta</span><span class="p">,</span> <span class="n">_delta</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">build_pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">build_pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute the histogram (pdf) of the data&quot;&quot;&quot;</span>
-    <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">build_support</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">build_support</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">density</span><span class="p">:</span>
+        <span class="n">hist</span> <span class="o">=</span> <span class="n">hist</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span>
 
 
 <div class="viewcode-block" id="ToSymbolProbability"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.ToSymbolProbability">[docs]</a><span class="k">class</span> <span class="nc">ToSymbolProbability</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert values in columns to their probabilities.</span>
 
-<span class="sd">    The transfomer estimate the histogram (`pdf`) for the provided columns and</span>
+<span class="sd">    The :class:`Transformer` estimate the histogram (`pdf`) for the provided columns and</span>
 <span class="sd">    then convert original values to probability `x_new = pdf(x)`</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
 <span class="sd">        :param name: name for this :class:`Transformer`</span>
 
@@ -166,6 +171,89 @@
 
 <div class="viewcode-block" id="ToSymbolProbability.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.ToSymbolProbability.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;ToSymbolProbability on y is not invertible&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span></div></div>
+
+
+<div class="viewcode-block" id="Digitize"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize">[docs]</a><span class="k">class</span> <span class="nc">Digitize</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Digitize values in columns based on their `pdf`.</span>
+
+<span class="sd">    The :class:`Transformer` estimate the histogram (`pdf`) for the provided columns and</span>
+<span class="sd">    then digitize original values based on their `pdf`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param x_levels: an integer or a list of integers indicating the number of symbols to be used for each column (default: `2`)</span>
+<span class="sd">        :param y_levels: an integer or a list of integers indicating the number of symbols to be used for each column (default: `2`)</span>
+<span class="sd">        :param sklearn_output: if True produces outputs compatible with sklearn Pipeline (default: `False`)</span>
+<span class="sd">        :param name: name for this :class:`Transformer`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; digitize = Digitize(x_cols=[&#39;x_1&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; x_new, y_new = digitize.fit_transform(x, y)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">y_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">x_levels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y_levels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sklearn_output</span><span class="o">=</span><span class="n">sklearn_output</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">x_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">y_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_levels</span> <span class="o">=</span> <span class="n">x_levels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_levels</span> <span class="o">=</span> <span class="n">y_levels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thresholds</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">ths</span><span class="p">,</span> <span class="n">levels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">),</span> <span class="s1">&#39;size mismatch between digits and columns: </span><span class="si">{}</span><span class="s1"> != </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">levels</span><span class="p">),</span>
+                                                                                                         <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">))</span>
+            <span class="n">_levels</span> <span class="o">=</span> <span class="n">levels</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_levels</span> <span class="o">=</span> <span class="p">[</span><span class="n">levels</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">_levels</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">l</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;level cannot be less than 2 got </span><span class="si">{}</span><span class="s1"> for column </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39; </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1"> levels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">build_pdf</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">ths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="Digitize.fit_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize.fit_x">[docs]</a>    <span class="k">def</span> <span class="nf">fit_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;x_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;fitting x&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thresholds</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_levels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Digitize.fit_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize.fit_y">[docs]</a>    <span class="k">def</span> <span class="nf">fit_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span> <span class="o">=</span> <span class="n">_check_cols</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;y_cols: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;fitting y&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thresholds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_levels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="nd">@memoize</span>
+    <span class="k">def</span> <span class="nf">_to_digit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">ths</span><span class="p">):</span>
+        <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="n">_data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_digit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ths</span><span class="p">[</span><span class="n">c</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">_data</span>
+
+<div class="viewcode-block" id="Digitize.transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize.transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;transforming x&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thresholds</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Digitize.transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize.transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;transforming x&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thresholds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Digitize.inverse_transform_x"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize.inverse_transform_x">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;Digitize on x is not invertible&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="Digitize.inverse_transform_y"><a class="viewcode-back" href="../../../pipesnake.transformers.html#pipesnake.transformers.stats.Digitize.inverse_transform_y">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="p">(</span><span class="s1">&#39;Digitize on y is not invertible&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">y</span></div></div>
 </pre></div>
 

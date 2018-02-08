@@ -71,8 +71,8 @@
 <span class="sd">    Replace NaNs using different strategies. Note that categorical columns will not be imputed see :class:`Category2Number`</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param value: the value to be used in the imputation, it can be a number or `&#39;mean&#39;` or `&#39;median&#39;`, in the last</span>
 <span class="sd">                      two cases the value is the mean or the median of the given column</span>
 <span class="sd">        :param method:  {`backfill`, `bfill`, `pad`, `ffill`, `None`}, (default: `None`). Method to use for filling holes</span>
@@ -138,8 +138,8 @@
 <span class="sd">    Replace NaNs using different Knn approach</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
-<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected</span>
+<span class="sd">        :param x_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
+<span class="sd">        :param y_cols: a list of columns name or a list of indices; &#39;all&#39; to use all columns; if [] no columns will be affected (default: `[]`)</span>
 <span class="sd">        :param k: k value for Knn algorithm</span>
 <span class="sd">        :param x_is_categorical: a list of boolean indicating categorical columns, if `None` categorical will be autodetect</span>
 <span class="sd">                                 using the type of the column, all non numerical columns will be treated as categorical (default: `None`)</span>
